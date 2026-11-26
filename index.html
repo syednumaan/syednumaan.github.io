@@ -625,7 +625,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
     // 3. Match heading text by slug (for Markdown TOCs where headings lack explicit IDs).
     const targetSlug = normalizeSlug(decodedId);
     if (targetSlug) {
-      for (const heading of document.querySelectorAll('h1, h2, h3, h4, h5, h6')) {
+      for (const heading of document.querySelectorAll(', h2, h3, h4, h5, h6')) {
         if (normalizeSlug(heading.textContent || '') === targetSlug) {
           return heading;
         }
@@ -1080,7 +1080,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
 
     h1 {
       font-size: clamp(3.3rem, 7.5vw, 5.6rem)!important;
-      font-weight: 800!important;
+      font-weight: 600!important;
       line-height: 1.02;
       letter-spacing: -0.035em;
       margin-bottom: 20px;
