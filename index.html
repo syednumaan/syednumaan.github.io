@@ -1182,7 +1182,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
       overflow: hidden;
       border: 1px solid var(--border);
       background: #0d1324;
-      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease, filter 0.45s ease, border-color 0.3s ease;
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease, filter 0.45s ease, border-color 0.3s ease!important;
       box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
     }
 
@@ -1229,7 +1229,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
       filter: brightness(0.6);
     }
 
-    .slide-card.hidden {
+    .slide-card.offscreen {
       z-index: 1;
       transform: scale(0.7);
       opacity: 0;
@@ -2131,7 +2131,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
 
         const total = GALLERY_ITEMS.length;
         slideCards.forEach((card, i) => {
-          let cls = "hidden";
+          let cls = "offscreen";
           if (i === currentSlide) cls = "active";
           else if (i === (currentSlide - 1 + total) % total) cls = "prev";
           else if (i === (currentSlide + 1) % total) cls = "next";
