@@ -2143,7 +2143,19 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
       }, { passive: true });
 
       renderCarousel();
+// Auto-advance snapshots every 4 seconds (pauses on hover)
+      let autoPlay = setInterval(() => {
+        currentSlide = (currentSlide + 1) % GALLERY_ITEMS.length;
+        renderCarousel();
+      }, 4000);
 
+      stage.addEventListener("mouseenter", () => clearInterval(autoPlay));
+      stage.addEventListener("mouseleave", () => {
+        autoPlay = setInterval(() => {
+          currentSlide = (currentSlide + 1) % GALLERY_ITEMS.length;
+          renderCarousel();
+        }, 4000);
+      });
       /* =========================================================================
          6. FILTERABLE PROJECTS (#lab) WITH LIVE EDIT SYNC
       ========================================================================= */
