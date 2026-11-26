@@ -1182,7 +1182,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
       overflow: hidden;
       border: 1px solid var(--border);
       background: #0d1324;
-      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease, filter 0.45s ease, border-color 0.3s ease!important;
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease, filter 0.45s ease, border-color 0.3s ease;
       box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
     }
 
@@ -1229,7 +1229,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
       filter: brightness(0.6);
     }
 
-    .slide-card.offscreen {
+    .slide-card.hidden {
       z-index: 1;
       transform: scale(0.7);
       opacity: 0;
@@ -1792,7 +1792,12 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
       "img": "images/trek.jpeg",
       "bg": "linear-gradient(135deg, #0d2b2e, #1a4f52)"
     },
-    
+    {
+      "title": "Bench Day — Electronics & Solder",
+      "caption": "// Just a random day at the bench with circuits, wires, and a soldering iron.",
+      "img": "images/solder.jpeg",
+      "bg": "linear-gradient(135deg, #1b1a2e, #3b2d5c)"
+    },
     {
       "title": "Bench Day — Electronics & Solder",
       "caption": "// Just a random day at the bench with circuits, wires, and a soldering iron.",
@@ -2084,18 +2089,18 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
       const captionBox = document.getElementById("captionBox");
       const dotsContainer = document.getElementById("dotsContainer");
 
-      let slideCards = [];
-      let dotBtns = [];
-
-      function buildCarousel() {
+      function renderCarousel() {
         stage.innerHTML = "";
         dotsContainer.innerHTML = "";
-        slideCards = [];
-        dotBtns = [];
 
         GALLERY_ITEMS.forEach((item, i) => {
           const card = document.createElement("div");
-          card.className = "slide-card hidden";
+          let cls = "hidden";
+          if (i === currentSlide) cls = "active";
+          else if (i === (currentSlide - 1 + GALLERY_ITEMS.length) % GALLERY_ITEMS.length) cls = "prev";
+          else if (i === (currentSlide + 1) % GALLERY_ITEMS.length) cls = "next";
+
+          card.className = `slide-card ${cls}`;
           card.innerHTML = item.img
             ? `<img src="${item.img}" alt="${item.title}" />`
             : `<div class="slide-placeholder" style="background:${item.bg}">
@@ -2106,38 +2111,17 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
           card.addEventListener("click", () => {
             currentSlide = i;
             renderCarousel();
-            resetAutoPlay();
           });
           stage.appendChild(card);
-          slideCards.push(card);
 
           const dotBtn = document.createElement("button");
-          dotBtn.className = "dot magnify-target";
+          dotBtn.className = `dot magnify-target ${i === currentSlide ? "active" : ""}`;
           dotBtn.setAttribute("aria-label", `Go to slide ${i + 1}`);
           dotBtn.addEventListener("click", () => {
             currentSlide = i;
             renderCarousel();
-            resetAutoPlay();
           });
           dotsContainer.appendChild(dotBtn);
-          dotBtns.push(dotBtn);
-        });
-      }
-
-      function renderCarousel() {
-        if (slideCards.length !== GALLERY_ITEMS.length) {
-          buildCarousel();
-        }
-
-        const total = GALLERY_ITEMS.length;
-        slideCards.forEach((card, i) => {
-          let cls = "offscreen";
-          if (i === currentSlide) cls = "active";
-          else if (i === (currentSlide - 1 + total) % total) cls = "prev";
-          else if (i === (currentSlide + 1) % total) cls = "next";
-
-          card.className = `slide-card ${cls}`;
-          dotBtns[i].classList.toggle("active", i === currentSlide);
         });
 
         if (GALLERY_ITEMS[currentSlide]) {
@@ -2145,20 +2129,46 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
         }
       }
 
-      let autoPlay;
-      function startAutoPlay() {
-        clearInterval(autoPlay);
+      document.getElementById("prevBtn").addEventListener("click", () => {
+        currentSlide = (currentSlide - 1 + GALLERY_ITEMS.length) % GALLERY_ITEMS.length;
+        renderCarousel();
+      });
+
+      document.getElementById("nextBtn").addEventListener("click", () => {
+        currentSlide = (currentSlide + 1) % GALLERY_ITEMS.length;
+        renderCarousel();
+      });
+
+      // Touch swipe support for mobile carousel navigation
+      let touchStartX = 0;
+      stage.addEventListener("touchstart", (e) => {
+        touchStartX = e.changedTouches[0].clientX;
+      }, { passive: true });
+
+      stage.addEventListener("touchend", (e) => {
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(dx) > 40) {
+          currentSlide = dx < 0
+            ? (currentSlide + 1) % GALLERY_ITEMS.length
+            : (currentSlide - 1 + GALLERY_ITEMS.length) % GALLERY_ITEMS.length;
+          renderCarousel();
+        }
+      }, { passive: true });
+
+      renderCarousel();
+// Auto-advance snapshots every 4 seconds (pauses on hover)
+      let autoPlay = setInterval(() => {
+        currentSlide = (currentSlide + 1) % GALLERY_ITEMS.length;
+        renderCarousel();
+      }, 4000);
+
+      stage.addEventListener("mouseenter", () => clearInterval(autoPlay));
+      stage.addEventListener("mouseleave", () => {
         autoPlay = setInterval(() => {
           currentSlide = (currentSlide + 1) % GALLERY_ITEMS.length;
           renderCarousel();
         }, 4000);
-      }
-
-      function resetAutoPlay() {
-        startAutoPlay();
-      }
-
-      document.getElementById("prevBtn").
+      });
       /* =========================================================================
          6. FILTERABLE PROJECTS (#lab) WITH LIVE EDIT SYNC
       ========================================================================= */
